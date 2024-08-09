@@ -28,3 +28,4 @@ Settings (to control hot water charging by changing from economy to luxury)
 hot water mode: select.hot_water_comfort_mode_47041
 start temp luxury: number.start_temperature_hw_luxury_47043
 stop temp luxury: number.stop_temperature_hw_luxury_47047
+temporary luxury: select.temporary_lux_48132
