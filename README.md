@@ -1,5 +1,6 @@
 # Nibe-HP-IOT
 Repository to setup logging from Nibe HP through modbus
+- ![Dashboard example]()
 
 ## Hardware
 - Nibe Heatpump works confirmed on F1155 & F1255
@@ -23,7 +24,7 @@ I logged in my router to select a fixed IP for the ESP board such that it won't 
 ## Step 3: Wire the board to the heatpump
 - See [wiring scheme](https://www.nibe.eu/nl-nl/installateur/schema-s-overzichten-en-technische-ondersteuning/elektrische-aansluitoverzichten)
 - [Example](https://www.vanwerkhoven.org/blog/2023/nibe-heatpump-home-automation/)
-- ![Wiring example, I already had a cable connected to the pins]()
+
    
 
 ## Step 4: Select Modbus option in your heatpump
