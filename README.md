@@ -1,6 +1,6 @@
 # Nibe-HP-IOT
 Repository to setup logging from Nibe HP through modbus
-- ![Dashboard example]()
+- ![Dashboard example](https://github.com/kejes/Nibe-HP-IOT/blob/main/Docs/dashboard.jpg?raw=true)
 
 ## Hardware
 - Nibe Heatpump works confirmed on F1155 & F1255
