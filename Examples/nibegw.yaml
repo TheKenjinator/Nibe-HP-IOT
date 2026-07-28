@@ -1,9 +1,19 @@
-# NIBE File
+# NIBE F1155 -> Home Assistant gateway
+# LilyGo T-CAN485 (ESP32 + RS485) acting as a MODBUS40 accessory.
+#
+# Before flashing, replace every value marked CHANGE ME.
+
 esphome:
   name: nibegw
   comment: Nibegw
-  platform: ESP32
+
+# Platform moved out of the esphome block in ESPHome 2022.x.
+# Keep the framework explicit: newer ESPHome defaults ESP32 to esp-idf,
+# and the elupus component is tested against arduino.
+esp32:
   board: esp32dev
+  framework:
+    type: arduino
 
 # General ESPHome setup
 api:
@@ -11,18 +21,26 @@ api:
 
 ota:
   - platform: esphome
-    password: ["YOUR PASSWORD"]
+    password: !secret ota_password
 
 logger:
-  baud_rate: 0
+  baud_rate: 0 # Serial logging off. The USB console will show nothing --
+               # this is expected. Use the ESPHome dashboard logs over WiFi.
 
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
-  fast_connect: true # Fast connect to connect to my hidden network
-  # It is recommended to disable powersave mode on wifi, to make sure the device does not miss UDP requests sent.
-  power_save_mode: none
-  # The device needs a static IP. Either do that here with the manual_ip node, or do it via another way (router)
+  fast_connect: true # Required for hidden SSIDs
+  power_save_mode: none # The device must not miss inbound UDP requests
+
+  # A static IP is effectively mandatory: Home Assistant sends read/write
+  # requests TO this device, so the address must never change.
+  # Setting it here is more reliable than a DHCP reservation.
+  manual_ip:
+    static_ip: 192.168.1.50 # CHANGE ME -- this gateway's address
+    gateway: 192.168.1.1 # CHANGE ME -- your router
+    subnet: 255.255.255.0
+    dns1: 192.168.1.1 # CHANGE ME -- usually the same as gateway
 
 # Load nibe component
 external_components:
@@ -55,26 +73,25 @@ uart:
 # Configure NibeGW
 nibegw:
   udp:
-    # The target address(s) to send data to. May be a multicast address.
-    # When using Home Assistant: this is your Home Assistant IP.
+    # Where to send pump data. This is your HOME ASSISTANT ip, not this device's.
     target:
-      - ip: [YOUR_HA_IP]
-        port: 9999 #The Nibe Home Assistant integration listens to 9999 by default 
+      - ip: 192.168.1.10 # CHANGE ME -- Home Assistant
+        port: 9999 # The Nibe Home Assistant integration listens on 9999 by default
 
-    # List of source address to accept data from, may be empty for no filter
+    # Accept requests only from these addresses. May be empty for no filter.
     source:
-      - [YOUR_HA_IP]
+      - 192.168.1.10 # CHANGE ME -- Home Assistant
 
-    # Optional port this device will listen to to receive read requests. Defaults to 9999
+    # Optional port this device listens on for read requests. Defaults to 9999
     # read_port: 9999
 
-    # Optional port this device will listen to to receive write request. Defaults to 10000
+    # Optional port this device listens on for write requests. Defaults to 10000
     # write_port: 10000
 
   acknowledge:
     - MODBUS40
 
-  # Constant replies to certain requests cabe made
+  # Constant replies to certain requests can be made
   constants:
     - address: MODBUS40
       token: ACCESSORY
@@ -86,7 +103,7 @@ nibegw:
 
 # Some helper functions to restart ESPHome from HA
 button:
-- platform: restart
-  name: Nibegw Restart
-- platform: safe_mode
-  name: Nibegw Safe Mode Boot
+  - platform: restart
+    name: Nibegw Restart
+  - platform: safe_mode
+    name: Nibegw Safe Mode Boot
